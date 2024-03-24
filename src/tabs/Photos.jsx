@@ -1,5 +1,5 @@
 import { getPhotos } from 'apiService/photos';
-import { Text, Form, PhotosGallery, Button } from 'components';
+import { Text, Form, PhotosGallery, Button, Loader } from 'components';
 import { useState, useEffect } from 'react';
 
 export const Photos = () => {
@@ -7,6 +7,8 @@ export const Photos = () => {
 
   const [page, setPage] = useState(1);
   const [photos, setPhotos] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
   const hendleSearch = query => {
     setQuery(query);
     setPage(1);
@@ -16,8 +18,10 @@ export const Photos = () => {
   useEffect(() => {
     if (!query) return;
     const fetchPhotos = async () => {
+      setIsLoading(true);
       try {
         const response = await getPhotos(query, page);
+        setIsLoading();
         setPhotos(pre => [...pre, ...response.photos]);
       } catch (error) {
         console.log(error);
@@ -35,6 +39,7 @@ export const Photos = () => {
       <Form addTodos={hendleSearch} />
       <PhotosGallery photos={photos} />
       <Button onClick={hendleClick}>Load more</Button>
+      {isLoading && <Loader />}
     </>
   );
 };
